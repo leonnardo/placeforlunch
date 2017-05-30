@@ -22,7 +22,7 @@ public class HomeController {
     }
 
     @RequestMapping("/")
-    public List<RestaurantResponse> home() {
-        return searchPlacesNearby.search();
+    public List<RestaurantResponse> home(Integer distance, Double lat, Double lng) {
+        return searchPlacesNearby.search(distance, lat, lng);
     }
 }

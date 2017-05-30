@@ -20,16 +20,17 @@ public class SearchPlacesNearby {
     private final GeoApiContext context;
 
     // Netshoes coordinates
-    private final LatLng coordinates = new LatLng(-23.5707022, -46.6395067);
+    //    private final LatLng coordinates = new LatLng(-23.5707022, -46.6395067);
 
     public SearchPlacesNearby(@Value("${google.apiKey}") String apiKey) {
         this.context = new GeoApiContext().setApiKey(apiKey);
     }
 
-    public List<RestaurantResponse> search() {
+    public List<RestaurantResponse> search(final Integer distance, final Double lat, final Double lng) {
+        final LatLng coordinates = new LatLng(lat, lng);
         return convertFromPlacesToJson(Arrays.asList(PlacesApi.nearbySearchQuery(context, coordinates)
                 .type(PlaceType.RESTAURANT)
-                .radius(1000)
+                .radius(distance)
                 .awaitIgnoreError()
                 .results));
     }
