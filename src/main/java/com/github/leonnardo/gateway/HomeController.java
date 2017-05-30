@@ -1,10 +1,12 @@
 package com.github.leonnardo.gateway;
 
+import com.github.domain.RestaurantResponse;
 import com.github.leonnardo.usecases.SearchPlacesNearby;
-import com.google.maps.model.PlacesSearchResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * Created by Leonnardo on 26/05/17.
@@ -20,7 +22,7 @@ public class HomeController {
     }
 
     @RequestMapping("/")
-    public PlacesSearchResult[] home() {
+    public List<RestaurantResponse> home() {
         return searchPlacesNearby.search();
     }
 }

@@ -1,11 +1,15 @@
 package com.github.leonnardo.usecases;
 
+import com.github.domain.RestaurantResponse;
 import com.google.maps.GeoApiContext;
 import com.google.maps.PlacesApi;
 import com.google.maps.model.LatLng;
+import com.google.maps.model.PlaceType;
 import com.google.maps.model.PlacesSearchResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 /**
  * Created by Leonnardo on 26/05/17.
@@ -22,7 +26,19 @@ public class SearchPlacesNearby {
         this.context = new GeoApiContext().setApiKey(apiKey);
     }
 
-    public PlacesSearchResult[] search() {
-        return PlacesApi.nearbySearchQuery(context, coordinates).radius(1000).awaitIgnoreError().results;
+    public List<RestaurantResponse> search() {
+        return convertFromPlacesToJson(Arrays.asList(PlacesApi.nearbySearchQuery(context, coordinates)
+                .type(PlaceType.RESTAURANT)
+                .radius(1000)
+                .awaitIgnoreError()
+                .results));
+    }
+
+
+    private List<RestaurantResponse> convertFromPlacesToJson(List<PlacesSearchResult> placesSearchResults) {
+        final ArrayList<RestaurantResponse> response = new ArrayList<>();
+        placesSearchResults.forEach(place -> response.add(new RestaurantResponse(place.name, place.vicinity, (double) place.rating)));
+        response.sort(Comparator.comparing(RestaurantResponse::getRating).reversed());
+        return response;
     }
 }
