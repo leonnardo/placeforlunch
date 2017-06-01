@@ -2,10 +2,9 @@ package com.github.leonnardo.usecases;
 
 import com.github.domain.RestaurantResponse;
 import com.google.maps.GeoApiContext;
+import com.google.maps.NearbySearchRequest;
 import com.google.maps.PlacesApi;
-import com.google.maps.model.LatLng;
-import com.google.maps.model.PlaceType;
-import com.google.maps.model.PlacesSearchResult;
+import com.google.maps.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,20 +18,18 @@ public class SearchPlacesNearby {
 
     private final GeoApiContext context;
 
-    // Netshoes coordinates
-    //    private final LatLng coordinates = new LatLng(-23.5707022, -46.6395067);
-
     public SearchPlacesNearby(@Value("${google.apiKey}") String apiKey) {
         this.context = new GeoApiContext().setApiKey(apiKey);
     }
 
     public List<RestaurantResponse> search(final Integer distance, final Double lat, final Double lng) {
         final LatLng coordinates = new LatLng(lat, lng);
-        return convertFromPlacesToJson(Arrays.asList(PlacesApi.nearbySearchQuery(context, coordinates)
-                .type(PlaceType.RESTAURANT)
-                .radius(distance)
-                .awaitIgnoreError()
-                .results));
+        NearbySearchRequest searchRequest = PlacesApi.nearbySearchQuery(context, coordinates).type(PlaceType.RESTAURANT)
+                .rankby(RankBy.DISTANCE);
+
+        PlacesSearchResponse response = searchRequest.awaitIgnoreError();
+
+        return convertFromPlacesToJson(Arrays.asList(response.results));
     }
 
 
